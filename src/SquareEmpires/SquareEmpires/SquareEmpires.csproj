@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\lib\FFNez\Nez.Portable\FFNez.csproj" />
+    <ProjectReference Include="..\..\..\lib\Glint\Glint\Glint.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Characters\Base" />
+    <Folder Include="Scenes\Menu" />
+  </ItemGroup>
+</Project>
