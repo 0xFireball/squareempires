@@ -23,7 +23,7 @@ namespace SquareEmpires.Scenes.Game {
         public override void initialize() {
             base.initialize();
 
-            clearColor = new Color(208, 195, 220);
+            clearColor = new Color(230, 177, 213);
 
             // data
             _gameContext = Core.services.GetService<GameContext>();
