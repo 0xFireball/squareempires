@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Glint", "..\..\lib\Glint\Gl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SquareEmpiresDk", "SquareEmpiresDk\SquareEmpiresDk.csproj", "{1FD69BFA-85CC-435B-AC0C-84B11E2D9B3B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WireSpire", "WireSpire\WireSpire.csproj", "{C4C97E61-973E-40DA-839D-A075572CA29E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{1FD69BFA-85CC-435B-AC0C-84B11E2D9B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FD69BFA-85CC-435B-AC0C-84B11E2D9B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FD69BFA-85CC-435B-AC0C-84B11E2D9B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C97E61-973E-40DA-839D-A075572CA29E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C97E61-973E-40DA-839D-A075572CA29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C97E61-973E-40DA-839D-A075572CA29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C97E61-973E-40DA-839D-A075572CA29E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CBEC3FFC-AB36-4B88-B33C-70A93F82AA75} = {9C0A7820-05AB-4F6F-BFF2-DA1B494A0AAA}
