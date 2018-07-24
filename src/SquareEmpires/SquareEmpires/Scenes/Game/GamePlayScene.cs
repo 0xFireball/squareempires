@@ -109,6 +109,12 @@ namespace SquareEmpires.Scenes.Game {
             // set up the board
             var board = createEntity("board");
             board.addComponent(new GameBoard(new MapRef(msg.mapSize)));
+            // setup navigator camera
+            camera.setMaximumZoom(2f);
+            camera.setMinimumZoom(0.1f);
+            camera.setZoom(0);
+            var navigator = camera.addComponent(new Navigator());
+            camera.setUpdateOrder(int.MaxValue);
         }
 
         public override void unload() {
