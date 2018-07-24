@@ -15,7 +15,7 @@ namespace SquareEmpires.Scenes.Menu {
             clearColor = new Color(47, 47, 47);
 
             var uiAssets = Core.services.GetService<UiAssets>();
-            var borderPadding = 20;
+            const int borderPadding = 20;
 
             // title picture
             var titleCoverEntity = createEntity("intro_cover");
@@ -24,20 +24,20 @@ namespace SquareEmpires.Scenes.Menu {
             var titleCover = titleCoverEntity.addComponent<Components.UI.TitleCover>();
             titleCover.sprite.layerDepth = 1;
 
-            var petaphaserTextCom =
+            var petaphaserText =
                 new TextComposer(StringResources.DEVELOPER_NAME, uiAssets.AndinaBMFont, 1f)
                     .attach(this,
-                        resolution.ToVector2(), Color.WhiteSmoke, "petaphaser_t");
-            petaphaserTextCom.updateOffsets(new Vector2(-(petaphaserTextCom.TextComponent.width + borderPadding),
-                -(petaphaserTextCom.TextComponent.height / 2 + borderPadding)));
+                        resolution.ToVector2(), Color.WhiteSmoke, "petaphaser");
+            petaphaserText.updateOffsets(new Vector2(-(petaphaserText.TextComponent.width + borderPadding),
+                -(petaphaserText.TextComponent.height / 2 + borderPadding)));
 
-            petaphaserTextCom.TextComponent
+            petaphaserText.TextComponent
                 .tweenColorTo(new Color(255, 15, 127), 0.6f)
                 .setEaseType(EaseType.QuadInOut)
                 .setLoops(LoopType.PingPong, 96, 0.2f)
                 .start();
 
-            var pressToPlayTextCom = new TextComposer("press 'E'", uiAssets.AndinaBMFont, 0.5f)
+            new TextComposer("press 'E'", uiAssets.AndinaBMFont, 0.5f)
                 .attach(this,
                     new Vector2(20f, resolution.Y - 20f),
                     Color.WhiteSmoke, "playText");

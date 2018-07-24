@@ -1,8 +1,11 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using Glint.UI;
 using Glint.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Nez;
+using SquareEmpires.Assets;
 using SquareEmpires.Components.UI;
 using SquareEmpires.Configuration;
 using SquareEmpires.Scenes.Base;
@@ -43,10 +46,11 @@ namespace SquareEmpires.Scenes.Game {
         public override void initialize() {
             base.initialize();
 
-            clearColor = new Color(230, 177, 213);
+            clearColor = Color.DarkSlateBlue;
 
             // data
             _gameContext = Core.services.GetService<GameContext>();
+            var uiAssets = Core.services.GetService<UiAssets>();
 
             // Hide system cursor
             Core.instance.IsMouseVisible = false;
@@ -61,6 +65,12 @@ namespace SquareEmpires.Scenes.Game {
             var cursorComponent = targetCursor.addComponent(new PointerCursor(renderlayer_cursor_overlay));
             cursorComponent.sprite.renderLayer = renderlayer_cursor_overlay;
             targetCursor.addComponent<MouseFollow>();
+
+            // add loading text
+            var loadingUi = createEntity("loading");
+            loadingUi.addComponent(
+                new Text(uiAssets.AndinaBMFont, "loading\n. . .", new Vector2(resolution.X / 2, resolution.Y - 100),
+                    Color.WhiteSmoke).setHorizontalAlign(HorizontalAlign.Center)).transform.setLocalScale(2);
         }
 
         public override void onStart() {
@@ -83,10 +93,14 @@ namespace SquareEmpires.Scenes.Game {
             client = new RemoteGameClient(new NetworkClientConnection(RemoteGameProtocol.instance));
             var clientConnectTask = client.ConnectAsync(new Target(serverInformation.ip, serverInformation.port));
             clientConnectTask.ContinueWith(x => client.joinGameAsync(true));
-            // TODO: do we need to remove the eventhandler
-            client.empireAssigned += (o, e) => {
-                // TODO: set up rendering and stuff
-            };
+            client.empireAssigned = setupOnConnected;
+        }
+
+        private void setupOnConnected() {
+            // TODO: set up rendering and stuff
+            clearColor = new Color(230, 177, 213);
+            findEntity("loading").destroy();
+            // set up the board
         }
 
         public override void unload() {

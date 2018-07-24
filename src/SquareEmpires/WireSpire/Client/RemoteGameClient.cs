@@ -11,7 +11,7 @@ namespace WireSpire.Client {
 
         public int myEmpire = -1;
 
-        public event EventHandler empireAssigned;
+        public Action empireAssigned;
 
         public Task joinGameAsync(bool ready) {
             var msg = new JoinMessage {ready = ready};
