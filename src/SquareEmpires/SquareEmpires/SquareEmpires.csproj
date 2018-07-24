@@ -5,6 +5,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\lib\FFNez\Nez.Portable\FFNez.csproj" />
     <ProjectReference Include="..\..\..\lib\Glint\Glint\Glint.csproj" />
+    <ProjectReference Include="..\WireSpire\WireSpire.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
