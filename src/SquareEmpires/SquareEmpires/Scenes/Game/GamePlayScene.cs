@@ -23,12 +23,22 @@ namespace SquareEmpires.Scenes.Game {
         private GameContext _gameContext;
 
         // -- game
+        private ServerInformation serverInformation;
         private GameServer server;
         private Thread serverThread;
         private RemoteGameClient client;
 
         // -- constants
         public const int DEFAULT_GAME_PORT = 14834;
+
+        public class ServerInformation {
+            public string ip;
+            public int port;
+        }
+
+        public GamePlayScene(ServerInformation serverInformation) {
+            this.serverInformation = serverInformation;
+        }
 
         public override void initialize() {
             base.initialize();
@@ -56,20 +66,24 @@ namespace SquareEmpires.Scenes.Game {
         public override void onStart() {
             base.onStart();
 
-            // we need to run a server
-            var localServerPort = DEFAULT_GAME_PORT;
-            server = new GameServer(new NetworkConnectionProvider(RemoteGameProtocol.instance,
-                new Target(Target.AnyIP, localServerPort), GameServer.MAX_CONNECTIONS));
-            server.initializeSimulation();
-            // run the server on a server thread
-            serverThread = new Thread(server.Start);
-            serverThread.Start();
+            if (serverInformation == null) {
+                // we need to run a server
+                var localServerPort = DEFAULT_GAME_PORT;
+                server = new GameServer(new NetworkConnectionProvider(RemoteGameProtocol.instance,
+                    new Target(Target.AnyIP, localServerPort), GameServer.MAX_CONNECTIONS));
+                server.initializeSimulation();
+                // run the server on a server thread
+                serverThread = new Thread(server.Start);
+                serverThread.Start();
+                serverInformation = new ServerInformation {ip = Target.LoopbackIP, port = localServerPort};
+            }
 
             // run a client and connect
             // TODO: locally generate and store RSA client key
             client = new RemoteGameClient(new NetworkClientConnection(RemoteGameProtocol.instance));
-            var clientConnectTask = client.ConnectAsync(new Target(Target.LoopbackIP, localServerPort));
+            var clientConnectTask = client.ConnectAsync(new Target(serverInformation.ip, serverInformation.port));
             clientConnectTask.ContinueWith(x => client.joinGameAsync(true));
+            // TODO: do we need to remove the eventhandler
             client.empireAssigned += (o, e) => {
                 // TODO: set up rendering and stuff
             };
@@ -79,12 +93,14 @@ namespace SquareEmpires.Scenes.Game {
             base.unload();
 
             // stop the server
-            server.Stop();
+            if (server != null && server.IsRunning) {
+                server.Stop();
+            }
         }
 
         public override void update() {
             base.update();
-            
+
             if (Input.isKeyPressed(Keys.Escape)) {
                 // end this scene
                 switchSceneFade<MenuScene>(0.1f);
@@ -93,7 +109,7 @@ namespace SquareEmpires.Scenes.Game {
             if (client.myEmpire > 0) {
                 // TODO: ??? hmmm
             }
-            
+
             // TODO: other stuff and things
 #if DEBUG
             if (Input.isKeyPressed(Keys.OemCloseBrackets)) {

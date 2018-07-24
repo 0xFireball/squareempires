@@ -16,7 +16,7 @@ namespace SquareEmpires.Scenes.Menu {
 
             var uiAssets = Core.services.GetService<UiAssets>();
             var borderPadding = 20;
-            
+
             // title picture
             var titleCoverEntity = createEntity("intro_cover");
             titleCoverEntity.position = (resolution.ToVector2() / 2) * new Vector2(1, 0.9f);
@@ -40,16 +40,29 @@ namespace SquareEmpires.Scenes.Menu {
             var pressToPlayTextCom = new TextComposer("press 'E'", uiAssets.AndinaBMFont, 0.5f)
                 .attach(this,
                     new Vector2(20f, resolution.Y - 20f),
-                    Color.WhiteSmoke, "pressToPlay");
+                    Color.WhiteSmoke, "playText");
         }
 
         public override void update() {
             base.update();
 
             if (Input.isKeyDown(Keys.E)) {
-                var text = findEntity("pressToPlay").getComponent<Text>();
+                var text = findEntity("playText").getComponent<Text>();
                 text.tweenColorTo(Color.Gold, 0.1f)
-                    .setCompletionHandler(_ => switchSceneFade<GamePlayScene>(0.6f))
+                    .setCompletionHandler(_ => switchSceneFade(new GamePlayScene(serverInformation: null), 0.6f))
+                    .setNextTween(text.tweenColorTo(Color.Gray, 0.6f).setEaseType(EaseType.QuadOut))
+                    .start();
+            }
+
+            if (Input.isKeyDown(Keys.R)) {
+                var text = findEntity("playText").getComponent<Text>();
+                text.tweenColorTo(Color.Gold, 0.1f)
+                    .setCompletionHandler(_ =>
+                        switchSceneFade(
+                            new GamePlayScene(serverInformation: new GamePlayScene.ServerInformation {
+                                ip = "127.0.0.1",
+                                port = GamePlayScene.DEFAULT_GAME_PORT
+                            }), 0.6f))
                     .setNextTween(text.tweenColorTo(Color.Gray, 0.6f).setEaseType(EaseType.QuadOut))
                     .start();
             }

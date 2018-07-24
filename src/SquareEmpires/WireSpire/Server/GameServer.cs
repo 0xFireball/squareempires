@@ -23,7 +23,7 @@ namespace WireSpire.Server {
 
         private void onJoinMessage(MessageEventArgs<JoinMessage> obj) {
             // assign the empire or something
-            var player = players.FirstOrDefault(x => x.connection == obj.Connection);
+            var player = players.First(x => x.connection == obj.Connection);
             player.empireId = player.id;
             obj.Connection.SendAsync(new EmpireAssignmentMessage {empireId = player.empireId});
         }

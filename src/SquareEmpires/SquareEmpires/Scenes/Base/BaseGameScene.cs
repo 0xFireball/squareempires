@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Nez;
 
 namespace SquareEmpires.Scenes.Base {
@@ -23,9 +24,13 @@ namespace SquareEmpires.Scenes.Base {
         }
 
         protected void switchSceneFade<TScene>(float duration = 0.5f) where TScene : BaseGameScene, new() {
+            switchSceneFade(new TScene(), duration);
+        }
+
+        protected void switchSceneFade(BaseGameScene scene, float duration) {
             if (_active && !Core.instance.inScreenTransition) {
                 _active = false;
-                Core.startSceneTransition(new CrossFadeTransition(() => new TScene()) {
+                Core.startSceneTransition(new CrossFadeTransition(() => scene) {
                     fadeDuration = duration
                 });
             }
