@@ -17,12 +17,20 @@ namespace WireSpire {
             }
         }
 
-        public Tile[,] tiles;
+        public Tile[] tiles;
         public Position size;
+
+        public Tile get(int x, int y) {
+            return tiles[y * size.x + x];
+        }
+
+        public void set(int x, int y, Tile tile) {
+            tiles[y * size.x + x] = tile;
+        }
 
         public Map(Position size) {
             this.size = size;
-            tiles = new Tile[size.x, size.y];
+            tiles = new Tile[size.x * size.y];
         }
     }
 }

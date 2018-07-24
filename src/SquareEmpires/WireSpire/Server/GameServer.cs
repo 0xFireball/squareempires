@@ -23,9 +23,14 @@ namespace WireSpire.Server {
 
         private void onJoinMessage(MessageEventArgs<JoinMessage> obj) {
             // assign the empire or something
+            // TODO: this should properly support picking _your_ empire on a save
             var player = players.First(x => x.connection == obj.Connection);
             player.empireId = player.id;
-            obj.Connection.SendAsync(new EmpireAssignmentMessage {empireId = player.empireId});
+            obj.Connection.SendAsync(new GameInfoMessage {
+                playerCount = simulation.empires.Count,
+                mapSize = simulation.world.map.size,
+                empireId = player.empireId
+            });
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {

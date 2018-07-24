@@ -5,9 +5,9 @@ namespace WireSpire {
         public Map generate(Position size) {
             // TODO: make this an actual map generator
             var map = new Map(size);
-            for (var i = 0; i < map.size.x; i++) {
-                for (var j = 0; j < map.size.y; j++) {
-                    map.tiles[i, j] = new Map.Tile(Map.Terrain.LAND);
+            for (var j = 0; j < map.size.y; j++) {
+                for (var i = 0; i < map.size.x; i++) {
+                    map.tiles[j * size.x + i] = new Map.Tile(Map.Terrain.LAND);
                 }
             }
 

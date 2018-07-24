@@ -1,25 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tempest;
 using WireSpire.Server.Messages;
 
 namespace WireSpire.Client {
     public class RemoteGameClient : TempestClient {
-        public RemoteGameClient(IClientConnection connection) : base(connection, MessageTypes.Reliable) {
-            this.RegisterMessageHandler<EmpireAssignmentMessage>(onEmpireAssigned);
+        public RemoteGameClient(IClientConnection connection) : base(connection, MessageTypes.Reliable) { }
+
+        private Dictionary<Type, Delegate> messageHandlers = new Dictionary<Type, Delegate>();
+
+        public void subscribe<TMessage>(Action<TMessage> callback) where TMessage : RemoteGameMessage, new() {
+            messageHandlers[typeof(TMessage)] = callback;
+            this.RegisterMessageHandler<TMessage>(args => {
+                messageHandlers[typeof(TMessage)].DynamicInvoke(args.Message);
+            });
         }
-
-        public int myEmpire = -1;
-
-        public Action empireAssigned;
 
         public Task joinGameAsync(bool ready) {
             var msg = new JoinMessage {ready = ready};
             return Connection.SendAsync(msg);
-        }
-
-        private void onEmpireAssigned(MessageEventArgs<EmpireAssignmentMessage> obj) {
-            myEmpire = obj.Message.empireId;
         }
     }
 }
