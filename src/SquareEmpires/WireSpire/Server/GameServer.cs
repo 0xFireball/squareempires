@@ -25,6 +25,7 @@ namespace WireSpire.Server {
             // assign the empire or something
             var player = players.FirstOrDefault(x => x.connection == obj.Connection);
             player.empireId = player.id;
+            obj.Connection.SendAsync(new EmpireAssignmentMessage {empireId = player.empireId});
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {

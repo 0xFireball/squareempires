@@ -10,6 +10,7 @@ namespace WireSpire.Server {
 
         static RemoteGameProtocol() {
             registerMessage<JoinMessage>();
+            registerMessage<EmpireAssignmentMessage>();
             registerMessage<FinishTurnMessage>();
         }
 

@@ -6,6 +6,7 @@ using Nez;
 using SquareEmpires.Components.UI;
 using SquareEmpires.Configuration;
 using SquareEmpires.Scenes.Base;
+using SquareEmpires.Scenes.Menu;
 using Tempest;
 using Tempest.Providers.Network;
 using WireSpire.Client;
@@ -62,22 +63,38 @@ namespace SquareEmpires.Scenes.Game {
             server.initializeSimulation();
             // run the server on a server thread
             serverThread = new Thread(server.Start);
-            
+            serverThread.Start();
+
             // run a client and connect
-            client = new RemoteGameClient(new NetworkClientConnection(RemoteGameProtocol.instance, new RSAAsymmetricKey()));
+            // TODO: locally generate and store RSA client key
+            client = new RemoteGameClient(new NetworkClientConnection(RemoteGameProtocol.instance));
+            var clientConnectTask = client.ConnectAsync(new Target(Target.LoopbackIP, localServerPort));
+            clientConnectTask.ContinueWith(x => client.joinGameAsync(true));
+            client.empireAssigned += (o, e) => {
+                // TODO: set up rendering and stuff
+            };
         }
 
         public override void unload() {
             base.unload();
-            
+
             // stop the server
             server.Stop();
         }
 
         public override void update() {
             base.update();
-            // TODO: other stuff and things
+            
+            if (Input.isKeyPressed(Keys.Escape)) {
+                // end this scene
+                switchSceneFade<MenuScene>(0.1f);
+            }
 
+            if (client.myEmpire > 0) {
+                // TODO: ??? hmmm
+            }
+            
+            // TODO: other stuff and things
 #if DEBUG
             if (Input.isKeyPressed(Keys.OemCloseBrackets)) {
                 Core.debugRenderEnabled = !Core.debugRenderEnabled;
