@@ -1,16 +1,14 @@
-﻿using System.Net.Sockets;
+﻿using Tempest;
 
 namespace WireSpire.Server {
     public class ConnectedPlayer {
         public int id;
-        public TcpClient sock;
-        public byte[] buffer = new byte[BUFFER_SIZE];
+        public int empireId;
+        public IConnection connection;
 
-        public const int BUFFER_SIZE = 16 * 1024;
-
-        public ConnectedPlayer(int id, TcpClient sock) {
+        public ConnectedPlayer(int id, IConnection connection) {
             this.id = id;
-            this.sock = sock;
+            this.connection = connection;
         }
     }
 }

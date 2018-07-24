@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Net;
+using Tempest;
+using Tempest.Providers.Network;
 using WireSpire.Server;
 
 namespace WireSpire {
@@ -8,8 +9,10 @@ namespace WireSpire {
             var opts = options(args);
             opts.TryGetValue("p", out var portStr);
             int.TryParse(portStr ?? "14834", out var serverPort);
-            
-            var server = new GameServer(new IPEndPoint(IPAddress.Any, serverPort));
+            var server = new GameServer(new NetworkConnectionProvider(RemoteGameProtocol.instance,
+                new Target(Target.AnyIP, serverPort), GameServer.MAX_CONNECTIONS));
+            server.initializeSimulation();
+            server.Start();
         }
 
         public static Dictionary<string, string> options(string[] args) {
