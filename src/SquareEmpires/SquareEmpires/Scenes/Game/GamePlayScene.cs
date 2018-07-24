@@ -1,12 +1,7 @@
-﻿using System.Linq;
-using Glint;
-using Glint.Components.Camera;
-using Glint.Util;
+﻿using Glint.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Nez;
-using Nez.Tiled;
-using SquareEmpires.Components.Camera;
 using SquareEmpires.Components.UI;
 using SquareEmpires.Configuration;
 using SquareEmpires.Scenes.Base;
