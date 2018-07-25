@@ -1,10 +1,13 @@
-﻿using Glint;
+﻿using System.Collections.Generic;
+using Glint;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
+using SquareEmpires.Game;
 using WireSpire;
 using WireSpire.Refs;
+using WireSpire.Types;
 
 namespace SquareEmpires.Components.Board {
     public class GameBoard : RenderableComponent, IUpdatable {
@@ -12,17 +15,35 @@ namespace SquareEmpires.Components.Board {
         private Subtexture baseTileSubtex;
         private Subtexture propertyTileSubtex;
 
-        public MapRef map;
+        private List<Subtexture> stationsSubtexes;
+
+        private RemoteGameState gameState;
+        public MapRef map => gameState.map;
+
+        public List<Color> empireColors = new List<Color>() {
+            Color.DeepPink,
+            Color.Blue,
+            Color.DarkGreen,
+            Color.DarkOrange,
+            Color.Purple,
+            Color.Yellow
+        };
 
         public const int TILE_DRAW_SIZE = 32;
+        private const int TILE_TEXTURE_SIZE = 32;
 
-        public GameBoard(MapRef map) {
-            this.map = map;
+        public GameBoard(RemoteGameState gameState) {
+            this.gameState = gameState;
 
             var tileTexture = GlintCore.contentSource.Load<Texture2D>("Sprites/Game/tile");
-            unknownTileSubtex = new Subtexture(tileTexture, new Rectangle(0, 0, 32, 32));
-            baseTileSubtex = new Subtexture(tileTexture, new Rectangle(32, 0, 32, 32));
-            propertyTileSubtex = new Subtexture(tileTexture, new Rectangle(64, 0, 32, 32));
+            unknownTileSubtex = new Subtexture(tileTexture, new Rectangle(0, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+            baseTileSubtex = new Subtexture(tileTexture,
+                new Rectangle(TILE_TEXTURE_SIZE, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+            propertyTileSubtex = new Subtexture(tileTexture,
+                new Rectangle(TILE_TEXTURE_SIZE * 2, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+
+            var stationsTexture = GlintCore.contentSource.Load<Texture2D>("Sprites/Game/station");
+            stationsSubtexes = Subtexture.subtexturesFromAtlas(stationsTexture, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
         }
 
         public override RectangleF bounds {
@@ -38,6 +59,10 @@ namespace SquareEmpires.Components.Board {
             }
         }
 
+        private Vector2 tilePosition(Position pos) {
+            return new Vector2(pos.x * TILE_DRAW_SIZE, pos.y * TILE_DRAW_SIZE);
+        }
+
         public override void render(Graphics graphics, Camera camera) {
             // draw tiles
             graphics.batcher.drawRect(
@@ -47,12 +72,19 @@ namespace SquareEmpires.Components.Board {
                 for (var j = 0; j < map.size.y; j++) {
                     for (var i = 0; i < map.size.x; i++) {
                         var tile = map.tiles[j * map.size.x + i];
-                        var rX = i * TILE_DRAW_SIZE;
-                        var rY = j * TILE_DRAW_SIZE;
                         graphics.batcher.draw(pickTexture(tile.ter),
-                            entity.transform.position + localOffset + new Vector2(rX, rY),
-                            Color.White, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
+                            entity.transform.position + localOffset + tilePosition(new Position(i, j)),
+                            Color.White);
                     }
+                }
+            }
+
+            if (gameState.buildings != null) {
+                foreach (var building in gameState.buildings) {
+                    var texture = pickTexture(building);
+                    var vpos = tilePosition(building.pos);
+                    graphics.batcher.draw(texture, vpos, Color.White);
+                    graphics.batcher.draw(propertyTileSubtex, vpos, pickEmpireColor(building.empire));
                 }
             }
         }
@@ -68,6 +100,19 @@ namespace SquareEmpires.Components.Board {
                 default:
                     return null;
             }
+        }
+
+        private Subtexture pickTexture(BuildingRef buildingRef) {
+            switch (buildingRef.type) {
+                case BuildingType.Station:
+                    return stationsSubtexes[buildingRef.level - 1];
+                default:
+                    return null;
+            }
+        }
+
+        private Color pickEmpireColor(int empireId) {
+            return empireColors[empireId % empireColors.Count];
         }
 
         public void update() { }

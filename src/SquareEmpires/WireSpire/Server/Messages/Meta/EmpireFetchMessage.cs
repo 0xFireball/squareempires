@@ -39,7 +39,7 @@ namespace WireSpire.Server.Messages {
             writer.WriteInt32(building.empire);
             writer.WriteInt32((int) building.type);
             writer.WriteInt32(building.level);
-            writer.writePosition(building.position);
+            writer.writePosition(building.pos);
         }
 
         private BuildingRef readBuilding(IValueReader reader) {
@@ -47,7 +47,7 @@ namespace WireSpire.Server.Messages {
                 empire = reader.ReadInt32(),
                 type = (BuildingType) reader.ReadInt32(),
                 level = reader.ReadInt32(),
-                position = reader.readPosition()
+                pos = reader.readPosition()
             };
         }
     }

@@ -7,6 +7,7 @@
 
         public EmpireRef(Empire empire) {
             id = empire.id;
+            name = empire.name;
         }
     }
 }

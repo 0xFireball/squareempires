@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Tempest;
+using WireSpire.Refs;
 using WireSpire.Types;
 
 namespace WireSpire.Server.Messages {
@@ -9,14 +10,15 @@ namespace WireSpire.Server.Messages {
         public int empireCount;
         public Position mapSize;
         public int empireId;
-        public List<string> empireNames;
+        public List<EmpireRef> empires;
 
         public override void WritePayload(ISerializationContext context, IValueWriter writer) {
             writer.WriteInt32(empireCount);
             writer.writePosition(mapSize);
             writer.WriteInt32(empireId);
-            foreach (var empireName in empireNames) {
-                writer.WriteString(empireName);
+            foreach (var empire in empires) {
+                writer.WriteInt32(empire.id);
+                writer.WriteString(empire.name);
             }
         }
 
@@ -24,9 +26,12 @@ namespace WireSpire.Server.Messages {
             empireCount = reader.ReadInt32();
             mapSize = reader.readPosition();
             empireId = reader.ReadInt32();
-            empireNames = new List<string>();
+            empires = new List<EmpireRef>();
             for (var i = 0; i < empireCount; i++) {
-                empireNames.Add(reader.ReadString());
+                empires.Add(new EmpireRef {
+                    id = reader.ReadInt32(),
+                    name = reader.ReadString()
+                });
             }
         }
     }

@@ -104,18 +104,21 @@ namespace SquareEmpires.Scenes.Game {
         }
 
         private void empireFetch(EmpireFetchMessage msg) {
-            var board = findEntity("board").getComponent<GameBoard>();
+            lock (gameState) {
+                gameState.buildings = msg.buildings;
+            }
         }
 
         private void setupOnConnected(GameInfoMessage msg) {
             gameState.empireId = msg.empireId;
-            gameState.empireNames = msg.empireNames;
+            gameState.empires = msg.empires;
             // TODO: set up rendering and stuff
             clearColor = new Color(225, 225, 225);
             findEntity("loading").destroy();
             // set up the board
             var board = createEntity("board");
-            board.addComponent(new GameBoard(new MapRef(msg.mapSize)));
+            gameState.map = new MapRef(msg.mapSize);
+            board.addComponent(new GameBoard(gameState));
             // setup navigator camera
             camera.setMaximumZoom(2f);
             camera.setMinimumZoom(0.1f);

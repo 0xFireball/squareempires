@@ -2,7 +2,7 @@
 
 namespace WireSpire.Refs {
     public class BuildingRef {
-        public Position position;
+        public Position pos;
         public int empire;
         public BuildingType type;
         public int level = 0;
@@ -10,7 +10,7 @@ namespace WireSpire.Refs {
         public BuildingRef() { }
 
         public BuildingRef(Building building) {
-            position = building.position;
+            pos = building.position;
             empire = building.empire.id;
             type = building.type;
             level = building.level;

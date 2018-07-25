@@ -32,7 +32,7 @@ namespace WireSpire.Server {
                 empireCount = simulation.empires.Count,
                 mapSize = simulation.world.map.size,
                 empireId = player.empireId,
-                empireNames = simulation.empires.Select(x => x.name).ToList()
+                empires = simulation.empires.Select(x => new EmpireRef(x)).ToList()
             });
             obj.Connection.SendAsync(new EmpireFetchMessage(empire));
         }
