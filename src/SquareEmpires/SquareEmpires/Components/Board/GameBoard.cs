@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Glint;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -33,6 +34,8 @@ namespace SquareEmpires.Components.Board {
 
         public const int TILE_DRAW_SIZE = 32;
         private const int TILE_TEXTURE_SIZE = 32;
+
+        private Position selectedPosition;
 
         public GameBoard(RemoteGameState gameState) {
             this.gameState = gameState;
@@ -90,6 +93,7 @@ namespace SquareEmpires.Components.Board {
                 }
             }
 
+            // draw buildings
             if (gameState.buildings != null) {
                 foreach (var building in gameState.buildings) {
                     var texture = pickTexture(building);
@@ -99,6 +103,7 @@ namespace SquareEmpires.Components.Board {
                 }
             }
 
+            // draw pawns
             if (gameState.pawns != null) {
                 foreach (var pawn in gameState.pawns) {
                     var texture = pickTexture(pawn);
@@ -107,6 +112,8 @@ namespace SquareEmpires.Components.Board {
                     graphics.batcher.draw(texture, vpos, pawnCol);
                 }
             }
+
+            // draw selection info
         }
 
         private Subtexture pickTexture(Map.Terrain tileType) {
@@ -139,6 +146,16 @@ namespace SquareEmpires.Components.Board {
             return empireColors[empireId % empireColors.Count];
         }
 
-        public void update() { }
+        public void update() {
+            if (Input.leftMouseButtonPressed) {
+                // calculate the selection tilepos
+                var selectionPos = Vector2Ext.transform(Input.mousePosition, transform);
+                var relativeSelectionPos = selectionPos - (entity.transform.position + localOffset);
+                var selectionTilePos = new Position((int) relativeSelectionPos.X / TILE_DRAW_SIZE,
+                    (int) relativeSelectionPos.Y / TILE_DRAW_SIZE);
+                // check if there's a selectable item on that tile
+                var therePawn = gameState.pawns.FirstOrDefault(x => x.pos.equalTo(selectionTilePos));
+            }
+        }
     }
 }
