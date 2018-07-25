@@ -149,7 +149,7 @@ namespace SquareEmpires.Components.Board {
         public void update() {
             if (Input.leftMouseButtonPressed) {
                 // calculate the selection tilepos
-                var selectionPos = Vector2Ext.transform(Input.mousePosition, transform);
+                var selectionPos = Vector2Ext.transform(Input.mousePosition, entity.scene.camera.inverseTransformMatrix);
                 var relativeSelectionPos = selectionPos - (entity.transform.position + localOffset);
                 var selectionTilePos = new Position((int) relativeSelectionPos.X / TILE_DRAW_SIZE,
                     (int) relativeSelectionPos.Y / TILE_DRAW_SIZE);
