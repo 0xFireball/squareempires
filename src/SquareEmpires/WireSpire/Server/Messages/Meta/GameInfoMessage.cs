@@ -1,25 +1,33 @@
-﻿using Tempest;
+﻿using System.Collections.Generic;
+using Tempest;
 using WireSpire.Types;
 
 namespace WireSpire.Server.Messages {
     public class GameInfoMessage : RemoteGameMessage {
-        public GameInfoMessage() : base(MessageKind.GameInfo) {}
+        public GameInfoMessage() : base(MessageKind.GameInfo) { }
 
-        public int playerCount;
+        public int empireCount;
         public Position mapSize;
         public int empireId;
-        
+        public List<string> empireNames;
+
         public override void WritePayload(ISerializationContext context, IValueWriter writer) {
-            writer.WriteInt32(playerCount);
-            writer.WriteInt32(mapSize.x);
-            writer.WriteInt32(mapSize.y);
+            writer.WriteInt32(empireCount);
+            writer.writePosition(mapSize);
             writer.WriteInt32(empireId);
+            foreach (var empireName in empireNames) {
+                writer.WriteString(empireName);
+            }
         }
 
         public override void ReadPayload(ISerializationContext context, IValueReader reader) {
-            playerCount = reader.ReadInt32();
-            mapSize = new Position(reader.ReadInt32(), reader.ReadInt32());
+            empireCount = reader.ReadInt32();
+            mapSize = reader.readPosition();
             empireId = reader.ReadInt32();
+            empireNames = new List<string>();
+            for (var i = 0; i < empireCount; i++) {
+                empireNames.Add(reader.ReadString());
+            }
         }
     }
 }

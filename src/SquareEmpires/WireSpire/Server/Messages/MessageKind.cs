@@ -3,7 +3,7 @@
         None,
         Join,
         FinishTurn,
-        EmpireAssignment,
-        GameInfo
+        GameInfo,
+        EmpireFetch
     }
 }

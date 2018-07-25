@@ -1,12 +1,12 @@
-﻿using System.Net.NetworkInformation;
-using Glint;
+﻿using Glint;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Textures;
-using SquareEmpires.Game;
+using WireSpire;
+using WireSpire.Refs;
 
-namespace SquareEmpires.Components.Map {
+namespace SquareEmpires.Components.Board {
     public class GameBoard : RenderableComponent, IUpdatable {
         private Subtexture unknownTileSubtex;
         private Subtexture baseTileSubtex;
@@ -49,7 +49,7 @@ namespace SquareEmpires.Components.Map {
                         var tile = map.tiles[j * map.size.x + i];
                         var rX = i * TILE_DRAW_SIZE;
                         var rY = j * TILE_DRAW_SIZE;
-                        graphics.batcher.draw(pickTexture(tile.type),
+                        graphics.batcher.draw(pickTexture(tile.ter),
                             entity.transform.position + localOffset + new Vector2(rX, rY),
                             Color.White, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f);
                     }
@@ -57,12 +57,12 @@ namespace SquareEmpires.Components.Map {
             }
         }
 
-        private Subtexture pickTexture(TileType tileType) {
+        private Subtexture pickTexture(Map.Terrain tileType) {
             switch (tileType) {
-                case TileType.Unknown:
+                case Map.Terrain.UNKNOWN:
                     return unknownTileSubtex;
                     break;
-                case TileType.Land:
+                case Map.Terrain.LAND:
                     return baseTileSubtex;
                     break;
                 default:

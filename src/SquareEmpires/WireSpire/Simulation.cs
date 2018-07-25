@@ -22,6 +22,7 @@ namespace WireSpire {
             var empireGenerator = new EmpireGenerator();
             for (var i = 0; i < empireCount; i++) {
                 var empire = empireGenerator.createEmpire(EmpireGenerator.EmpireTemplates.emergent);
+                empire.id = i;
                 empires.Add(empire);
             }
 

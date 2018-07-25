@@ -27,9 +27,10 @@ namespace WireSpire.Server {
             var player = players.First(x => x.connection == obj.Connection);
             player.empireId = player.id;
             obj.Connection.SendAsync(new GameInfoMessage {
-                playerCount = simulation.empires.Count,
+                empireCount = simulation.empires.Count,
                 mapSize = simulation.world.map.size,
-                empireId = player.empireId
+                empireId = player.empireId,
+                empireNames = simulation.empires.Select(x => x.name).ToList()
             });
         }
 
@@ -50,7 +51,7 @@ namespace WireSpire.Server {
 //        public IPEndPoint endpoint;
 //        public ConcurrentBag<ConnectedPlayer> players;
 //
-//        public GameServer(IPEndPoint endpoint, int playerCount) {
+//        public GameServer(IPEndPoint endpoint, int empireCount) {
 //            this.endpoint = endpoint;
 //        }
 //

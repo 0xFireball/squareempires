@@ -3,6 +3,7 @@
 namespace WireSpire {
     public class Empire {
         public string name;
+        public int id;
 
         public ResourceTable resources = new ResourceTable();
         public Station capital;

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading;
-using Glint.UI;
+﻿using System.Threading;
 using Glint.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Nez;
 using SquareEmpires.Assets;
-using SquareEmpires.Components.Map;
+using SquareEmpires.Components.Board;
 using SquareEmpires.Components.UI;
 using SquareEmpires.Configuration;
 using SquareEmpires.Game;
@@ -15,6 +13,7 @@ using SquareEmpires.Scenes.Menu;
 using Tempest;
 using Tempest.Providers.Network;
 using WireSpire.Client;
+using WireSpire.Refs;
 using WireSpire.Server;
 using WireSpire.Server.Messages;
 
@@ -33,7 +32,7 @@ namespace SquareEmpires.Scenes.Game {
         private GameServer server;
         private Thread serverThread;
         private RemoteGameClient client;
-        private int empireId;
+        private RemoteGameState gameState;
 
         // -- constants
         public const int DEFAULT_GAME_PORT = 14834;
@@ -99,10 +98,18 @@ namespace SquareEmpires.Scenes.Game {
             clientConnectTask.ContinueWith(x => client.joinGameAsync(true));
 //            client.onGameInfo = setupOnConnected;
             client.subscribe<GameInfoMessage>(setupOnConnected);
+            client.subscribe<EmpireFetchMessage>(empireFetch);
+
+            gameState = new RemoteGameState();
+        }
+
+        private void empireFetch(EmpireFetchMessage obj) {
+            var board = findEntity("board").getComponent<GameBoard>();
         }
 
         private void setupOnConnected(GameInfoMessage msg) {
-            empireId = msg.empireId;
+            gameState.empireId = msg.empireId;
+            gameState.empireNames = msg.empireNames;
             // TODO: set up rendering and stuff
             clearColor = new Color(225, 225, 225);
             findEntity("loading").destroy();
@@ -119,7 +126,7 @@ namespace SquareEmpires.Scenes.Game {
 
         public override void unload() {
             base.unload();
-            
+
             // close the client
             client.DisconnectAsync();
 
@@ -137,7 +144,7 @@ namespace SquareEmpires.Scenes.Game {
                 switchSceneFade<MenuScene>(0.1f);
             }
 
-            if (empireId > 0) {
+            if (gameState.empireId > 0) {
                 // TODO: ??? hmmm
             }
 

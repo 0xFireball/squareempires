@@ -3,6 +3,7 @@
 namespace WireSpire {
     public class Map {
         public enum Terrain {
+            UNKNOWN,
             LAND,
             WATER,
         }
