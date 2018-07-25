@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tempest;
+using WireSpire.Refs;
 using WireSpire.Server.Messages;
 using WireSpire.Types;
 
@@ -26,12 +27,14 @@ namespace WireSpire.Server {
             // TODO: this should properly support picking _your_ empire on a save
             var player = players.First(x => x.connection == obj.Connection);
             player.empireId = player.id;
+            var empire = simulation.empires[player.empireId];
             obj.Connection.SendAsync(new GameInfoMessage {
                 empireCount = simulation.empires.Count,
                 mapSize = simulation.world.map.size,
                 empireId = player.empireId,
                 empireNames = simulation.empires.Select(x => x.name).ToList()
             });
+            obj.Connection.SendAsync(new EmpireFetchMessage(empire));
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {

@@ -103,7 +103,7 @@ namespace SquareEmpires.Scenes.Game {
             gameState = new RemoteGameState();
         }
 
-        private void empireFetch(EmpireFetchMessage obj) {
+        private void empireFetch(EmpireFetchMessage msg) {
             var board = findEntity("board").getComponent<GameBoard>();
         }
 

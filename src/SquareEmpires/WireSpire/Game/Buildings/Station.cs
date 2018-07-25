@@ -14,6 +14,10 @@ namespace WireSpire {
             Glitterite = 8,
         }
 
-        public Station(Empire empire, Position position, Level level = Level.Outpost) : base(empire, position) { }
+        public override BuildingType type => BuildingType.Station;
+
+        public Station(Empire empire, Position position, Level level = Level.Outpost) : base(empire, position) {
+            base.level = (int) level;
+        }
     }
 }
