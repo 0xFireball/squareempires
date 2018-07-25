@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Tempest;
 using WireSpire.Refs;
 using WireSpire.Server.Messages;
@@ -35,6 +36,13 @@ namespace WireSpire.Server {
                 empires = simulation.empires.Select(x => new EmpireRef(x)).ToList()
             });
             obj.Connection.SendAsync(new EmpireFetchMessage(empire));
+            Task.Delay(5000).ContinueWith(x => obj.Connection.SendAsync(
+                new WorldUpdateMessage {
+                    tiles = new List<(Position, TileRef)>() {
+                        (new Position(1, 1), new TileRef {ter = Map.Terrain.LAND})
+                    }
+                }
+            ));
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {

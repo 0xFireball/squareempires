@@ -21,7 +21,7 @@ namespace WireSpire.Server.Messages {
             writer.WriteString(empireRef.name);
             writer.WriteInt32(buildings.Count);
             foreach (var building in buildings) {
-                writeBuilding(writer, building);
+                writer.writeBuilding(building);
             }
         }
 
@@ -30,25 +30,9 @@ namespace WireSpire.Server.Messages {
             buildings = new List<BuildingRef>();
             var buildingCount = reader.ReadInt32();
             for (var i = 0; i < buildingCount; i++) {
-                var building = readBuilding(reader);
+                var building = reader.readBuilding();
                 buildings.Add(building);
             }
-        }
-
-        private void writeBuilding(IValueWriter writer, BuildingRef building) {
-            writer.WriteInt32(building.empire);
-            writer.WriteInt32((int) building.type);
-            writer.WriteInt32(building.level);
-            writer.writePosition(building.pos);
-        }
-
-        private BuildingRef readBuilding(IValueReader reader) {
-            return new BuildingRef {
-                empire = reader.ReadInt32(),
-                type = (BuildingType) reader.ReadInt32(),
-                level = reader.ReadInt32(),
-                pos = reader.readPosition()
-            };
         }
     }
 }

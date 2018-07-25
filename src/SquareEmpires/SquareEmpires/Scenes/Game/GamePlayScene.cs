@@ -99,8 +99,19 @@ namespace SquareEmpires.Scenes.Game {
 //            client.onGameInfo = setupOnConnected;
             client.subscribe<GameInfoMessage>(setupOnConnected);
             client.subscribe<EmpireFetchMessage>(empireFetch);
+            client.subscribe<WorldUpdateMessage>(worldUpdate);
 
             gameState = new RemoteGameState();
+        }
+
+        private void worldUpdate(WorldUpdateMessage msg) {
+            lock (gameState) {
+                gameState.map.step();
+                foreach (var (pos, tile) in msg.tiles) {
+                    tile.fresh = true;
+                    gameState.map.set(pos, tile);
+                }
+            }
         }
 
         private void empireFetch(EmpireFetchMessage msg) {

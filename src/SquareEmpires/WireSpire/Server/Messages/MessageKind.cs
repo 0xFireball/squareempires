@@ -4,6 +4,7 @@
         Join,
         FinishTurn,
         GameInfo,
-        EmpireFetch
+        EmpireFetch,
+        WorldUpdate
     }
 }

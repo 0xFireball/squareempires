@@ -72,9 +72,15 @@ namespace SquareEmpires.Components.Board {
                 for (var j = 0; j < map.size.y; j++) {
                     for (var i = 0; i < map.size.x; i++) {
                         var tile = map.tiles[j * map.size.x + i];
-                        graphics.batcher.draw(pickTexture(tile.ter),
+                        var tileTex = pickTexture(tile.ter);
+                        var tileCol = Color.White;
+                        if (tile.ter != Map.Terrain.UNKNOWN && !tile.fresh) {
+                            tileCol = Color.Gray;
+                        }
+
+                        graphics.batcher.draw(tileTex,
                             entity.transform.position + localOffset + tilePosition(new Position(i, j)),
-                            Color.White);
+                            tileCol);
                     }
                 }
             }

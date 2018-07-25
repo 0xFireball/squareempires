@@ -14,11 +14,26 @@ namespace WireSpire.Refs {
                 tiles[i] = new TileRef {ter = Map.Terrain.UNKNOWN};
             }
         }
+        
+        public TileRef get(Position pos) {
+            return tiles[pos.y * size.x + pos.x];
+        }
+
+        public void set(Position pos, TileRef tile) {
+            tiles[pos.y * size.x + pos.x] = tile;
+        }
+
+        public void step() {
+            for (var i = 0; i < tiles.Length; i++) {
+                tiles[i].fresh = false;
+            }
+        }
     }
 
     public class TileRef {
         public Map.Terrain ter;
-        public List<(int, long)> resources;
+        public List<(int, long)> resources = new List<(int, long)>();
+        public bool fresh = true; // used client-side to check if tiles are updated
         public override string ToString() => ter.ToString();
 
         public TileRef() { }
