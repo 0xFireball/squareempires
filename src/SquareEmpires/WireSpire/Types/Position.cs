@@ -40,5 +40,7 @@ namespace WireSpire.Types {
         }
 
         public bool equalTo(Position p) => (x == p.x) && (y == p.y);
+
+        public override string ToString() => $"({x}, {y})";
     }
 }

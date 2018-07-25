@@ -27,6 +27,7 @@ namespace WireSpire.Server.Messages {
         }
 
         public override void ReadPayload(ISerializationContext context, IValueReader reader) {
+            world = new ObservedWorld();
             world.tiles = new List<(Position, TileRef)>();
             var tileCount = reader.ReadInt32();
             for (var i = 0; i < tileCount; i++) {

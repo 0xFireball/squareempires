@@ -111,6 +111,9 @@ namespace SquareEmpires.Scenes.Game {
                     tile.fresh = true;
                     gameState.map.set(pos, tile);
                 }
+
+                gameState.buildings = msg.world.buildings;
+                gameState.pawns = msg.world.pawns;
             }
         }
 

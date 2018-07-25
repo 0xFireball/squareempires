@@ -14,7 +14,7 @@ namespace WireSpire.Refs {
                 tiles[i] = new TileRef {ter = Map.Terrain.UNKNOWN};
             }
         }
-        
+
         public TileRef get(Position pos) {
             return tiles[pos.y * size.x + pos.x];
         }
@@ -32,7 +32,7 @@ namespace WireSpire.Refs {
 
     public class TileRef {
         public Map.Terrain ter;
-        public List<(int, long)> resources = new List<(int, long)>();
+        public List<(int, long)> resources;
         public bool fresh = true; // used client-side to check if tiles are updated
         public override string ToString() => ter.ToString();
 
@@ -40,7 +40,7 @@ namespace WireSpire.Refs {
 
         public TileRef(Map.Tile tile) {
             ter = tile.terrain;
-            resources = tile.resources.table.Select(x => (x.Key, x.Value)).ToList();
+            resources = tile.resources?.table.Select(x => (x.Key, x.Value)).ToList() ?? new List<(int, long)>();
         }
     }
 }

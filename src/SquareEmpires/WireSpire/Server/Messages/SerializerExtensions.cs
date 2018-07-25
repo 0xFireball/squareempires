@@ -26,6 +26,7 @@ namespace WireSpire.Server.Messages {
 
         public static TileRef readTile(this IValueReader reader) {
             var tile = new TileRef();
+            tile.ter = (Map.Terrain) reader.ReadInt32();
             var resourceCount = reader.ReadInt32();
             tile.resources = new List<(int, long)>(resourceCount);
             for (var i = 0; i < resourceCount; i++) {
@@ -50,7 +51,7 @@ namespace WireSpire.Server.Messages {
                 pos = reader.readPosition()
             };
         }
-        
+
         public static void writePawn(this IValueWriter writer, PawnRef pawn) {
             writer.WriteInt32(pawn.empire);
             writer.WriteInt32((int) pawn.type);

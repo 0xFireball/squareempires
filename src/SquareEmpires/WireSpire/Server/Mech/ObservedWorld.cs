@@ -14,12 +14,15 @@ namespace WireSpire.Server.Mech {
 
         private HashSet<Position> seenTiles;
 
+        public ObservedWorld() { }
+
         public ObservedWorld(World world, Empire empire) {
             this.world = world;
             this.empire = empire;
         }
 
         public void see() {
+            // add my buildings and my pawns
             buildings = empire.buildings.Select(x => new BuildingRef(x)).ToList();
             pawns = empire.pawns.Select(x => new PawnRef(x)).ToList();
 
@@ -36,6 +39,7 @@ namespace WireSpire.Server.Mech {
             }
 
             // convert vision to tiles and entities
+            tiles = new List<(Position, TileRef)>();
             foreach (var visiblePosition in seenTiles) {
                 var mapTile = new TileRef(world.map.get(visiblePosition));
                 tiles.Add((visiblePosition, mapTile));
@@ -44,7 +48,7 @@ namespace WireSpire.Server.Mech {
             // TODO: see other entities
         }
 
-        public bool seeAround(Position pos, int amount) {
+        private bool seeAround(Position pos, int amount) {
             if (seenTiles.Contains(pos)) return false;
             seenTiles.Add(pos);
             if (amount > 0) {

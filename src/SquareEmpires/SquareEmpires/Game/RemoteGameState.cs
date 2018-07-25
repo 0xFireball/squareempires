@@ -6,6 +6,7 @@ namespace SquareEmpires.Game {
         public int empireId;
         public List<EmpireRef> empires;
         public List<BuildingRef> buildings;
+        public List<PawnRef> pawns;
         public MapRef map;
     }
 }

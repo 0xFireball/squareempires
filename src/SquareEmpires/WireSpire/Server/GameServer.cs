@@ -37,7 +37,9 @@ namespace WireSpire.Server {
                 empires = simulation.empires.Select(x => new EmpireRef(x)).ToList()
             });
             msg.Connection.SendAsync(new EmpireFetchMessage(empire));
-            msg.Connection.SendAsync(new WorldUpdateMessage {world = new ObservedWorld(simulation.world, empire)});
+            var observedWorld = new ObservedWorld(simulation.world, empire);
+            observedWorld.see();
+            msg.Connection.SendAsync(new WorldUpdateMessage {world = observedWorld});
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {
