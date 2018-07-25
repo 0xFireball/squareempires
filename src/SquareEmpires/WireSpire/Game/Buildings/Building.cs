@@ -1,22 +1,20 @@
-﻿using WireSpire.Refs;
-using WireSpire.Types;
+﻿using WireSpire.Types;
 
 namespace WireSpire {
-    public enum BuildingType {
-        None,
-        Station
-    }
-
     public abstract class Building {
-        public Position position;
+        public enum Type {
+            None,
+            Station
+        }
+        
+        public Position pos;
         public Empire empire;
-
         public int level = 0;
-        public virtual BuildingType type => BuildingType.None;
+        public virtual Type type => Type.None;
 
-        public Building(Empire empire, Position position) {
+        public Building(Empire empire, Position pos) {
             this.empire = empire;
-            this.position = position;
+            this.pos = pos;
         }
     }
 }

@@ -107,7 +107,7 @@ namespace SquareEmpires.Scenes.Game {
         private void worldUpdate(WorldUpdateMessage msg) {
             lock (gameState) {
                 gameState.map.step();
-                foreach (var (pos, tile) in msg.tiles) {
+                foreach (var (pos, tile) in msg.world.tiles) {
                     tile.fresh = true;
                     gameState.map.set(pos, tile);
                 }

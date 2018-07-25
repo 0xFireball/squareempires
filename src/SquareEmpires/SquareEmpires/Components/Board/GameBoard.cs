@@ -110,7 +110,7 @@ namespace SquareEmpires.Components.Board {
 
         private Subtexture pickTexture(BuildingRef buildingRef) {
             switch (buildingRef.type) {
-                case BuildingType.Station:
+                case Building.Type.Station:
                     return stationsSubtexes[buildingRef.level - 1];
                 default:
                     return null;

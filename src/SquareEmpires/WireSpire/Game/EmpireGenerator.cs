@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using WireSpire.Entities;
 using WireSpire.Types;
 
 namespace WireSpire {
@@ -28,6 +29,9 @@ namespace WireSpire {
                 var capital = new Station(empires[i], positions[i], Station.Level.Outpost);
                 empires[i].capital = capital;
                 empires[i].addBuilding(capital);
+                // add a scout to each capital
+                var scout = new ScoutPawn(empires[i], positions[i]);
+                empires[i].addPawn(scout);
             }
         }
     }

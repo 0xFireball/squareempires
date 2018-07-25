@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tempest;
 using WireSpire.Refs;
+using WireSpire.Server.Mech;
 using WireSpire.Server.Messages;
 using WireSpire.Types;
 
@@ -23,26 +24,20 @@ namespace WireSpire.Server {
             simulation.initialize(); // hmmm
         }
 
-        private void onJoinMessage(MessageEventArgs<JoinMessage> obj) {
+        private void onJoinMessage(MessageEventArgs<JoinMessage> msg) {
             // assign the empire or something
             // TODO: this should properly support picking _your_ empire on a save
-            var player = players.First(x => x.connection == obj.Connection);
+            var player = players.First(x => x.connection == msg.Connection);
             player.empireId = player.id;
             var empire = simulation.empires[player.empireId];
-            obj.Connection.SendAsync(new GameInfoMessage {
+            msg.Connection.SendAsync(new GameInfoMessage {
                 empireCount = simulation.empires.Count,
                 mapSize = simulation.world.map.size,
                 empireId = player.empireId,
                 empires = simulation.empires.Select(x => new EmpireRef(x)).ToList()
             });
-            obj.Connection.SendAsync(new EmpireFetchMessage(empire));
-            Task.Delay(5000).ContinueWith(x => obj.Connection.SendAsync(
-                new WorldUpdateMessage {
-                    tiles = new List<(Position, TileRef)>() {
-                        (new Position(1, 1), new TileRef {ter = Map.Terrain.LAND})
-                    }
-                }
-            ));
+            msg.Connection.SendAsync(new EmpireFetchMessage(empire));
+            msg.Connection.SendAsync(new WorldUpdateMessage {world = new ObservedWorld(simulation.world, empire)});
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Tempest;
+using WireSpire.Entities;
 using WireSpire.Refs;
 using WireSpire.Types;
 
@@ -12,22 +13,6 @@ namespace WireSpire.Server.Messages {
 
         public static Position readPosition(this IValueReader reader) {
             return new Position(reader.ReadInt32(), reader.ReadInt32());
-        }
-
-        public static void writeBuilding(this IValueWriter writer, BuildingRef building) {
-            writer.WriteInt32(building.empire);
-            writer.WriteInt32((int) building.type);
-            writer.WriteInt32(building.level);
-            writer.writePosition(building.pos);
-        }
-
-        public static BuildingRef readBuilding(this IValueReader reader) {
-            return new BuildingRef {
-                empire = reader.ReadInt32(),
-                type = (BuildingType) reader.ReadInt32(),
-                level = reader.ReadInt32(),
-                pos = reader.readPosition()
-            };
         }
 
         public static void writeTile(this IValueWriter writer, TileRef tile) {
@@ -48,6 +33,38 @@ namespace WireSpire.Server.Messages {
             }
 
             return tile;
+        }
+
+        public static void writeBuilding(this IValueWriter writer, BuildingRef building) {
+            writer.WriteInt32(building.empire);
+            writer.WriteInt32((int) building.type);
+            writer.WriteInt32(building.level);
+            writer.writePosition(building.pos);
+        }
+
+        public static BuildingRef readBuilding(this IValueReader reader) {
+            return new BuildingRef {
+                empire = reader.ReadInt32(),
+                type = (Building.Type) reader.ReadInt32(),
+                level = reader.ReadInt32(),
+                pos = reader.readPosition()
+            };
+        }
+        
+        public static void writePawn(this IValueWriter writer, PawnRef pawn) {
+            writer.WriteInt32(pawn.empire);
+            writer.WriteInt32((int) pawn.type);
+            writer.WriteInt32(pawn.level);
+            writer.writePosition(pawn.pos);
+        }
+
+        public static PawnRef readPawn(this IValueReader reader) {
+            return new PawnRef {
+                empire = reader.ReadInt32(),
+                type = (Pawn.Type) reader.ReadInt32(),
+                level = reader.ReadInt32(),
+                pos = reader.readPosition()
+            };
         }
     }
 }
