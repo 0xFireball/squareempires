@@ -6,6 +6,7 @@ using Nez;
 using Nez.Textures;
 using SquareEmpires.Game;
 using WireSpire;
+using WireSpire.Entities;
 using WireSpire.Refs;
 using WireSpire.Types;
 
@@ -15,7 +16,8 @@ namespace SquareEmpires.Components.Board {
         private Subtexture baseTileSubtex;
         private Subtexture propertyTileSubtex;
 
-        private List<Subtexture> stationsSubtexes;
+        private List<Subtexture> stationSubtexes;
+        private List<Subtexture> pawnSubtexes;
 
         private RemoteGameState gameState;
         public MapRef map => gameState.map;
@@ -43,7 +45,10 @@ namespace SquareEmpires.Components.Board {
                 new Rectangle(TILE_TEXTURE_SIZE * 2, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
 
             var stationsTexture = GlintCore.contentSource.Load<Texture2D>("Sprites/Game/station");
-            stationsSubtexes = Subtexture.subtexturesFromAtlas(stationsTexture, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
+            stationSubtexes = Subtexture.subtexturesFromAtlas(stationsTexture, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
+
+            var pawnsTexture = GlintCore.contentSource.Load<Texture2D>("Sprites/Game/pawns");
+            pawnSubtexes = Subtexture.subtexturesFromAtlas(pawnsTexture, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
         }
 
         public override RectangleF bounds {
@@ -88,9 +93,18 @@ namespace SquareEmpires.Components.Board {
             if (gameState.buildings != null) {
                 foreach (var building in gameState.buildings) {
                     var texture = pickTexture(building);
-                    var vpos = tilePosition(building.pos);
+                    var vpos = entity.transform.position + localOffset + tilePosition(building.pos);
                     graphics.batcher.draw(texture, vpos, Color.White);
                     graphics.batcher.draw(propertyTileSubtex, vpos, pickEmpireColor(building.empire));
+                }
+            }
+
+            if (gameState.pawns != null) {
+                foreach (var pawn in gameState.pawns) {
+                    var texture = pickTexture(pawn);
+                    var vpos = entity.transform.position + localOffset + tilePosition(pawn.pos);
+                    var pawnCol = pickEmpireColor(pawn.empire);
+                    graphics.batcher.draw(texture, vpos, pawnCol);
                 }
             }
         }
@@ -111,10 +125,14 @@ namespace SquareEmpires.Components.Board {
         private Subtexture pickTexture(BuildingRef buildingRef) {
             switch (buildingRef.type) {
                 case Building.Type.Station:
-                    return stationsSubtexes[buildingRef.level - 1];
+                    return stationSubtexes[buildingRef.level - 1];
                 default:
                     return null;
             }
+        }
+
+        private Subtexture pickTexture(PawnRef pawnRef) {
+            return pawnSubtexes[(int) pawnRef.type];
         }
 
         private Color pickEmpireColor(int empireId) {

@@ -48,9 +48,9 @@ namespace WireSpire.Server.Mech {
             // TODO: see other entities
         }
 
-        private bool seeAround(Position pos, int amount) {
-            if (seenTiles.Contains(pos)) return false;
-            seenTiles.Add(pos);
+        private void seeAround(Position pos, int amount) {
+            if (pos.x < 0 || pos.y < 0 || pos.x >= world.map.size.x || pos.y >= world.map.size.y) return;
+            if (!seenTiles.Contains(pos)) seenTiles.Add(pos);
             if (amount > 0) {
                 amount--;
                 for (var dx = -1; dx <= 1; dx++) {
@@ -60,8 +60,6 @@ namespace WireSpire.Server.Mech {
                     }
                 }
             }
-
-            return true;
         }
     }
 }

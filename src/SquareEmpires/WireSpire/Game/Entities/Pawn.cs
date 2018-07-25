@@ -3,15 +3,22 @@
 namespace WireSpire.Entities {
     public abstract class Pawn {
         public enum Type {
-            Person,
-            Scout
+            Warrior,
+            Scout,
+            Archer,
+            Swordsman,
+            Knight,
+            Philosopher,
+            General,
+            Trebuchet,
+            Cannon
         }
 
         // - pawn data
         public Position pos;
         public Empire empire;
         public int level = 0;
-        public virtual Type type => Type.Person;
+        public virtual Type type => Type.Warrior;
         
         // - pawn internal game values
         public virtual int vision => 1;
