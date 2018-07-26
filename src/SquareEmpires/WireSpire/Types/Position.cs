@@ -18,8 +18,24 @@ namespace WireSpire.Types {
             return new Position(p1.x - p2.x, p1.y - p2.y);
         }
 
-        public static int tileDistance(Position p1, Position p2) {
+        /// <summary>
+        /// Manhattan distance
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
+        public static int mhDist(Position p1, Position p2) {
             return Math.Abs(p1.x - p2.x) + Math.Abs(p1.y - p2.y);
+        }
+
+        /// <summary>
+        /// Chebyshev distance
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
+        public static int chDist(Position p1, Position p2) {
+            return Math.Max(Math.Abs(p1.x - p2.x), Math.Abs(p1.y - p2.y));
         }
 
         public override bool Equals(object obj) {

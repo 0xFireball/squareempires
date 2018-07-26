@@ -7,15 +7,21 @@ using Nez;
 using Nez.Textures;
 using SquareEmpires.Game;
 using WireSpire;
-using WireSpire.Entities;
 using WireSpire.Refs;
 using WireSpire.Types;
 
 namespace SquareEmpires.Components.Board {
     public class GameBoard : RenderableComponent, IUpdatable {
+        // -- subtextures
+        //     > tile
         private Subtexture unknownTileSubtex;
         private Subtexture baseTileSubtex;
         private Subtexture propertyTileSubtex;
+        private Subtexture highlightedTileSubtex;
+
+        //     > tile_display
+        private Subtexture tileDisplayActiveSubtex;
+        private Subtexture tileDisplayTargetSubtex;
 
         private List<Subtexture> stationSubtexes;
         private List<Subtexture> pawnSubtexes;
@@ -45,7 +51,15 @@ namespace SquareEmpires.Components.Board {
             baseTileSubtex = new Subtexture(tileTexture,
                 new Rectangle(TILE_TEXTURE_SIZE, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
             propertyTileSubtex = new Subtexture(tileTexture,
-                new Rectangle(TILE_TEXTURE_SIZE * 2, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+                new Rectangle(0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+            highlightedTileSubtex = new Subtexture(tileTexture,
+                new Rectangle(TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+
+            var tileDisplayTexture = GlintCore.contentSource.Load<Texture2D>("Sprites/Game/tile_display");
+            tileDisplayActiveSubtex = new Subtexture(tileDisplayTexture,
+                new Rectangle(0, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
+            tileDisplayTargetSubtex = new Subtexture(tileDisplayTexture,
+                new Rectangle(TILE_TEXTURE_SIZE, 0, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE));
 
             var stationsTexture = GlintCore.contentSource.Load<Texture2D>("Sprites/Game/station");
             stationSubtexes = Subtexture.subtexturesFromAtlas(stationsTexture, TILE_TEXTURE_SIZE, TILE_TEXTURE_SIZE);
@@ -72,6 +86,10 @@ namespace SquareEmpires.Components.Board {
         }
 
         public override void render(Graphics graphics, Camera camera) {
+            Vector2 vpos(Position pos) {
+                return entity.transform.position + localOffset + tilePosition(pos);
+            }
+
             // draw tiles
             graphics.batcher.drawRect(
                 new Rectangle((entity.transform.position + localOffset).roundToPoint(),
@@ -93,13 +111,35 @@ namespace SquareEmpires.Components.Board {
                 }
             }
 
+            // draw selection info
+            if (selectedThing != null) {
+                var selectionColor = Color.LightSteelBlue;
+                graphics.batcher.draw(tileDisplayActiveSubtex, vpos(selectedThing.pos), selectionColor, rotation: 0f,
+                    origin: Vector2.Zero,
+                    scale: Vector2.One, effects: SpriteEffects.None, layerDepth: 1f);
+                if (selectedThing is PawnRef selectedPawn) {
+                    // draw available movements
+                    const int radius = 1; // TODO: use actual pawn values
+                    for (var i = -radius; i <= radius; i++) {
+                        for (var j = -radius; j <= radius; j++) {
+                            if (i == 0 && j == 0) continue;
+                            var endPos = selectedThing.pos + new Position(i, j);
+                            graphics.batcher.draw(tileDisplayTargetSubtex, vpos(endPos), selectionColor, rotation: 0f,
+                                origin: Vector2.Zero,
+                                scale: Vector2.One, effects: SpriteEffects.None, layerDepth: 0f);
+                        }
+                    }
+                }
+            }
+
             // draw buildings
             if (gameState.buildings != null) {
                 foreach (var building in gameState.buildings) {
                     var texture = pickTexture(building);
-                    var vpos = entity.transform.position + localOffset + tilePosition(building.pos);
-                    graphics.batcher.draw(texture, vpos, Color.White);
-                    graphics.batcher.draw(propertyTileSubtex, vpos, pickEmpireColor(building.empire));
+                    graphics.batcher.draw(texture, vpos(building.pos), Color.White);
+                    graphics.batcher.draw(propertyTileSubtex, vpos(building.pos), pickEmpireColor(building.empire),
+                        rotation: 0f, origin: Vector2.Zero,
+                        scale: Vector2.One, effects: SpriteEffects.None, layerDepth: 1f);
                 }
             }
 
@@ -107,16 +147,8 @@ namespace SquareEmpires.Components.Board {
             if (gameState.pawns != null) {
                 foreach (var pawn in gameState.pawns) {
                     var texture = pickTexture(pawn);
-                    var vpos = entity.transform.position + localOffset + tilePosition(pawn.pos);
                     var pawnCol = pickEmpireColor(pawn.empire);
-                    graphics.batcher.draw(texture, vpos, pawnCol);
-                }
-            }
-
-            // draw selection info
-            if (selectedThing != null) {
-                if (selectedThing is PawnRef selectedPawn) {
-                    // draw available movements
+                    graphics.batcher.draw(texture, vpos(pawn.pos), pawnCol);
                 }
             }
         }
@@ -152,15 +184,30 @@ namespace SquareEmpires.Components.Board {
         }
 
         public void update() {
-            if (Input.leftMouseButtonPressed) {
+            Position getMouseTile() {
                 // calculate the selection tilepos
-                var selectionPos = Vector2Ext.transform(Input.mousePosition, entity.scene.camera.inverseTransformMatrix);
+                var selectionPos =
+                    Vector2Ext.transform(Input.mousePosition, entity.scene.camera.inverseTransformMatrix);
                 var relativeSelectionPos = selectionPos - (entity.transform.position + localOffset);
-                var selectionTilePos = new Position((int) relativeSelectionPos.X / TILE_DRAW_SIZE,
+                var mouseTilePos = new Position((int) relativeSelectionPos.X / TILE_DRAW_SIZE,
                     (int) relativeSelectionPos.Y / TILE_DRAW_SIZE);
+                return mouseTilePos;
+            }
+            var selectionTilePos = getMouseTile();
+            if (Input.leftMouseButtonPressed) {
                 // check if there's a selectable item on that tile
                 var therePawn = gameState.pawns.FirstOrDefault(x => x.pos.equalTo(selectionTilePos));
                 selectedThing = therePawn;
+            }
+
+            if (Input.rightMouseButtonPressed) {
+                // check if we had a selection and apply it
+                if (selectedThing != null) {
+                    if (selectedThing is PawnRef pawn) {
+                        // TODO: queue sending move message
+                        selectedThing = null; // deselect
+                    }
+                }
             }
         }
     }
