@@ -2,9 +2,7 @@
 using WireSpire.Types;
 
 namespace WireSpire.Refs {
-    public class PawnRef {
-        public Position pos;
-        public int empire;
+    public class PawnRef : ThingRef {
         public Pawn.Type type;
         public int level = 0;
 

@@ -35,7 +35,7 @@ namespace SquareEmpires.Components.Board {
         public const int TILE_DRAW_SIZE = 32;
         private const int TILE_TEXTURE_SIZE = 32;
 
-        private Position selectedPosition;
+        private ThingRef selectedThing;
 
         public GameBoard(RemoteGameState gameState) {
             this.gameState = gameState;
@@ -114,6 +114,11 @@ namespace SquareEmpires.Components.Board {
             }
 
             // draw selection info
+            if (selectedThing != null) {
+                if (selectedThing is PawnRef selectedPawn) {
+                    // draw available movements
+                }
+            }
         }
 
         private Subtexture pickTexture(Map.Terrain tileType) {
@@ -155,6 +160,7 @@ namespace SquareEmpires.Components.Board {
                     (int) relativeSelectionPos.Y / TILE_DRAW_SIZE);
                 // check if there's a selectable item on that tile
                 var therePawn = gameState.pawns.FirstOrDefault(x => x.pos.equalTo(selectionTilePos));
+                selectedThing = therePawn;
             }
         }
     }

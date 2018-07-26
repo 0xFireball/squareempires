@@ -1,9 +1,7 @@
 ﻿using WireSpire.Types;
 
 namespace WireSpire.Refs {
-    public class BuildingRef {
-        public Position pos;
-        public int empire;
+    public class BuildingRef : ThingRef {
         public Building.Type type;
         public int level = 0;
 
