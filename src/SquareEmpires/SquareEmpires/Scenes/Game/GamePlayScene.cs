@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using Glint.Util;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -95,7 +96,7 @@ namespace SquareEmpires.Scenes.Game {
             // TODO: locally generate and store RSA client key
             client = new RemoteGameClient(new NetworkClientConnection(RemoteGameProtocol.instance));
             var clientConnectTask = client.ConnectAsync(new Target(serverInformation.ip, serverInformation.port));
-            clientConnectTask.ContinueWith(x => client.joinGameAsync(true));
+            clientConnectTask.ContinueWith(x => client.sendMessageAsync(new JoinMessage {ready = true}));
 //            client.onGameInfo = setupOnConnected;
             client.subscribe<GameInfoMessage>(setupOnConnected);
             client.subscribe<EmpireFetchMessage>(empireFetch);
@@ -106,6 +107,7 @@ namespace SquareEmpires.Scenes.Game {
 
         private void worldUpdate(WorldUpdateMessage msg) {
             lock (gameState) {
+                gameState.time = msg.world.time;
                 gameState.map.step();
                 foreach (var (pos, tile) in msg.world.tiles) {
                     tile.fresh = true;
@@ -130,9 +132,12 @@ namespace SquareEmpires.Scenes.Game {
             clearColor = new Color(225, 225, 225);
             findEntity("loading").destroy();
             // set up the board
-            var board = createEntity("board");
+            var boardEntity = createEntity("board");
             gameState.map = new MapRef(msg.mapSize);
-            board.addComponent(new GameBoard(gameState));
+            var board = boardEntity.addComponent(new GameBoard(gameState));
+            board.pawnMove = (pawn, dest) => {
+                client.sendMessageAsync(new MovePawnMessage {pawn = pawn, dest = dest});
+            };
             // setup navigator camera
             camera.setMaximumZoom(2f);
             camera.setMinimumZoom(0.1f);

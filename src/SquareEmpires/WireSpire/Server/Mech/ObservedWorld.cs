@@ -11,14 +11,16 @@ namespace WireSpire.Server.Mech {
         public List<(Position, TileRef)> tiles;
         public List<BuildingRef> buildings;
         public List<PawnRef> pawns;
+        public int time;
 
         private HashSet<Position> seenTiles;
 
         public ObservedWorld() { }
 
-        public ObservedWorld(World world, Empire empire) {
+        public ObservedWorld(World world, Empire empire, int time) {
             this.world = world;
             this.empire = empire;
+            this.time = time;
         }
 
         public void see() {

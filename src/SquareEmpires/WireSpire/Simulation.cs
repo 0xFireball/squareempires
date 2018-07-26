@@ -8,7 +8,7 @@ namespace WireSpire {
 
         public World world;
         public List<Empire> empires = new List<Empire>();
-        public int turn;
+        public int time;
 
         public Simulation(int empireCount, Position mapSize) {
             this.empireCount = empireCount;
@@ -31,16 +31,19 @@ namespace WireSpire {
             world = new World(map, empires);
         }
 
+        public Empire empireTurn => empires[time % empires.Count];
+
         /// <summary>
         /// step the simulation one turn (for a single empire)
         /// </summary>
         public void step() {
-            var empire = empires[turn];
+            var empire = empireTurn;
             // add all resources
             foreach (var resourceRow in empire.baseIncome.table) {
                 empire.resources.addResource(resourceRow.Key, resourceRow.Value);
             }
             // TODO: political updates, building ownership updates
+            time++; // step the time (update the turn)
         }
     }
 }

@@ -5,6 +5,7 @@
         FinishTurn,
         GameInfo,
         EmpireFetch,
-        WorldUpdate
+        WorldUpdate,
+        MovePawn
     }
 }

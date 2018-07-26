@@ -1,10 +1,10 @@
 ﻿using WireSpire.Entities;
-using WireSpire.Types;
 
 namespace WireSpire.Refs {
     public class PawnRef : ThingRef {
         public Pawn.Type type;
         public int level = 0;
+        public int lastMove = 0;
 
         public PawnRef() { }
 

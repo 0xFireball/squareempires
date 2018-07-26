@@ -8,5 +8,6 @@ namespace SquareEmpires.Game {
         public List<BuildingRef> buildings;
         public List<PawnRef> pawns;
         public MapRef map;
+        public int time { get; set; }
     }
 }

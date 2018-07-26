@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Tempest;
 using WireSpire.Refs;
 using WireSpire.Server.Mech;
@@ -37,7 +36,7 @@ namespace WireSpire.Server {
                 empires = simulation.empires.Select(x => new EmpireRef(x)).ToList()
             });
             msg.Connection.SendAsync(new EmpireFetchMessage(empire));
-            var observedWorld = new ObservedWorld(simulation.world, empire);
+            var observedWorld = new ObservedWorld(simulation.world, empire, simulation.time);
             observedWorld.see();
             msg.Connection.SendAsync(new WorldUpdateMessage {world = observedWorld});
         }

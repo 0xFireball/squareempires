@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Glint;
 using Microsoft.Xna.Framework;
@@ -7,6 +8,7 @@ using Nez;
 using Nez.Textures;
 using SquareEmpires.Game;
 using WireSpire;
+using WireSpire.Entities;
 using WireSpire.Refs;
 using WireSpire.Types;
 
@@ -40,6 +42,9 @@ namespace SquareEmpires.Components.Board {
 
         public const int TILE_DRAW_SIZE = 32;
         private const int TILE_TEXTURE_SIZE = 32;
+
+        // -- callbacks
+        public Action<PawnRef, Position> pawnMove;
 
         private ThingRef selectedThing;
 
@@ -144,6 +149,7 @@ namespace SquareEmpires.Components.Board {
             }
 
             // draw pawns
+            // TODO: highlight our pawns with available actions
             if (gameState.pawns != null) {
                 foreach (var pawn in gameState.pawns) {
                     var texture = pickTexture(pawn);
@@ -193,11 +199,16 @@ namespace SquareEmpires.Components.Board {
                     (int) relativeSelectionPos.Y / TILE_DRAW_SIZE);
                 return mouseTilePos;
             }
+
             var selectionTilePos = getMouseTile();
             if (Input.leftMouseButtonPressed) {
                 // check if there's a selectable item on that tile
                 var therePawn = gameState.pawns.FirstOrDefault(x => x.pos.equalTo(selectionTilePos));
-                selectedThing = therePawn;
+                if (therePawn != null) {
+                    if (therePawn.lastMove < gameState.time) {
+                        selectedThing = therePawn;
+                    }
+                }
             }
 
             if (Input.rightMouseButtonPressed) {
@@ -205,6 +216,8 @@ namespace SquareEmpires.Components.Board {
                 if (selectedThing != null) {
                     if (selectedThing is PawnRef pawn) {
                         // TODO: queue sending move message
+                        pawnMove?.Invoke(pawn, selectionTilePos);
+                        pawn.lastMove = gameState.time;
                         selectedThing = null; // deselect
                     }
                 }

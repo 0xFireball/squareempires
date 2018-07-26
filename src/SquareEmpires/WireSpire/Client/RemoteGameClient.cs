@@ -17,8 +17,7 @@ namespace WireSpire.Client {
             });
         }
 
-        public Task joinGameAsync(bool ready) {
-            var msg = new JoinMessage {ready = ready};
+        public Task sendMessageAsync(RemoteGameMessage msg) {
             return Connection.SendAsync(msg);
         }
     }
