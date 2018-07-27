@@ -4,7 +4,7 @@ namespace WireSpire.Refs {
     public class PawnRef : ThingRef {
         public Pawn.Type type;
         public int level = 0;
-        public int lastMove = 0;
+        public int lastMove;
 
         public PawnRef() { }
 
@@ -13,6 +13,7 @@ namespace WireSpire.Refs {
             empire = pawn.empire.id;
             type = pawn.type;
             level = pawn.level;
+            lastMove = pawn.lastMove;
         }
     }
 }

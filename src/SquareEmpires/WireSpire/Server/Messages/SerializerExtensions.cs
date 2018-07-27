@@ -57,6 +57,7 @@ namespace WireSpire.Server.Messages {
             writer.WriteInt32((int) pawn.type);
             writer.WriteInt32(pawn.level);
             writer.writePosition(pawn.pos);
+            writer.WriteInt32(pawn.lastMove);
         }
 
         public static PawnRef readPawn(this IValueReader reader) {
@@ -64,7 +65,8 @@ namespace WireSpire.Server.Messages {
                 empire = reader.ReadInt32(),
                 type = (Pawn.Type) reader.ReadInt32(),
                 level = reader.ReadInt32(),
-                pos = reader.readPosition()
+                pos = reader.readPosition(),
+                lastMove = reader.ReadInt32()
             };
         }
     }

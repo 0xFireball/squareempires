@@ -5,7 +5,5 @@ namespace WireSpire.Entities {
         public ScoutPawn(Empire empire, Position pos) : base(empire, pos) { }
 
         public override Type type => Type.Scout;
-
-        public override int vision => 3;
     }
 }

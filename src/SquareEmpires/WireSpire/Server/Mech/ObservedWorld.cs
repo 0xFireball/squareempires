@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WireSpire.Entities;
 using WireSpire.Refs;
 using WireSpire.Types;
 
@@ -37,7 +38,7 @@ namespace WireSpire.Server.Mech {
             }
 
             foreach (var pawn in empire.pawns) {
-                seeAround(pawn.pos, pawn.vision);
+                seeAround(pawn.pos, Pawn.vision[pawn.type]);
             }
 
             // convert vision to tiles and entities
@@ -51,7 +52,7 @@ namespace WireSpire.Server.Mech {
         }
 
         private void seeAround(Position pos, int amount) {
-            if (pos.x < 0 || pos.y < 0 || pos.x >= world.map.size.x || pos.y >= world.map.size.y) return;
+            if (!world.inWorld(pos)) return;
             if (!seenTiles.Contains(pos)) seenTiles.Add(pos);
             if (amount > 0) {
                 amount--;

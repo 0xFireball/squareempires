@@ -90,6 +90,10 @@ namespace SquareEmpires.Components.Board {
             return new Vector2(pos.x * TILE_DRAW_SIZE, pos.y * TILE_DRAW_SIZE);
         }
 
+        private bool inBoard(Position pos) {
+            return pos.x >= 0 && pos.y >= 0 && pos.x < map.size.x && pos.y < map.size.y;
+        }
+
         public override void render(Graphics graphics, Camera camera) {
             Vector2 vpos(Position pos) {
                 return entity.transform.position + localOffset + tilePosition(pos);
@@ -124,11 +128,12 @@ namespace SquareEmpires.Components.Board {
                     scale: Vector2.One, effects: SpriteEffects.None, layerDepth: 1f);
                 if (selectedThing is PawnRef selectedPawn) {
                     // draw available movements
-                    const int radius = 1; // TODO: use actual pawn values
-                    for (var i = -radius; i <= radius; i++) {
-                        for (var j = -radius; j <= radius; j++) {
+                    var moveRadius = Pawn.moveSpeed[selectedPawn.type];
+                    for (var i = -moveRadius; i <= moveRadius; i++) {
+                        for (var j = -moveRadius; j <= moveRadius; j++) {
                             if (i == 0 && j == 0) continue;
                             var endPos = selectedThing.pos + new Position(i, j);
+                            if (!inBoard(endPos)) continue;
                             graphics.batcher.draw(tileDisplayTargetSubtex, vpos(endPos), selectionColor, rotation: 0f,
                                 origin: Vector2.Zero,
                                 scale: Vector2.One, effects: SpriteEffects.None, layerDepth: 0f);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tempest;
+using WireSpire.Entities;
 using WireSpire.Refs;
 using WireSpire.Server.Mech;
 using WireSpire.Server.Messages;
@@ -15,6 +16,8 @@ namespace WireSpire.Server {
 
         public GameServer(IConnectionProvider provider) : base(provider, MessageTypes.Reliable) {
             this.RegisterMessageHandler<JoinMessage>(onJoinMessage);
+            this.RegisterMessageHandler<MovePawnMessage>(onMovePawnMessage);
+            this.RegisterMessageHandler<FinishTurnMessage>(onFinishTurnMessage);
         }
 
         public void initializeSimulation() {
@@ -39,6 +42,43 @@ namespace WireSpire.Server {
             var observedWorld = new ObservedWorld(simulation.world, empire, simulation.time);
             observedWorld.see();
             msg.Connection.SendAsync(new WorldUpdateMessage {world = observedWorld});
+        }
+
+        private void onMovePawnMessage(MessageEventArgs<MovePawnMessage> msg) {
+            // find our matching pawn repr
+            var pawn = simulation.empires.SelectMany(x => x.pawns)
+                .FirstOrDefault(x => x.pos.equalTo(msg.Message.pawn.pos));
+            if (pawn == null) return;
+            // sanity check (bounds)
+            if (!simulation.world.inWorld(msg.Message.dest)) return;
+            // enforce distance and time check
+            if (pawn.lastMove < simulation.time) {
+                if (Position.chDist(pawn.pos, msg.Message.dest) < Pawn.vision[pawn.type]) {
+                    // move approved
+                    pawn.lastMove = simulation.time;
+                    pawn.pos = msg.Message.dest;
+                    sendWorldUpdates();
+                }
+            }
+        }
+
+        private void onFinishTurnMessage(MessageEventArgs<FinishTurnMessage> msg) {
+            // TODO: step the simulation? ensure
+            simulation.step();
+            sendWorldUpdates(); // send updated world to everyone
+            // TODO: anything else?
+        }
+
+        private void sendWorldUpdates() {
+            // send an update to everyone
+            lock (players) {
+                foreach (var player in players) {
+                    var observedWorld = new ObservedWorld(simulation.world, simulation.empires[player.empireId],
+                        simulation.time);
+                    observedWorld.see();
+                    player.connection.SendAsync(new WorldUpdateMessage {world = observedWorld});
+                }
+            }
         }
 
         protected override void OnConnectionMade(object sender, ConnectionMadeEventArgs e) {
