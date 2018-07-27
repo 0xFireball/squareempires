@@ -11,6 +11,7 @@ namespace WireSpire.Server.Messages {
         public ObservedWorld world;
 
         public override void WritePayload(ISerializationContext context, IValueWriter writer) {
+            writer.WriteInt32(world.time);
             writer.WriteInt32(world.tiles.Count);
             foreach (var (pos, tile) in world.tiles) {
                 writer.writePosition(pos);
@@ -28,6 +29,7 @@ namespace WireSpire.Server.Messages {
 
         public override void ReadPayload(ISerializationContext context, IValueReader reader) {
             world = new ObservedWorld();
+            world.time = reader.ReadInt32();
             world.tiles = new List<(Position, TileRef)>();
             var tileCount = reader.ReadInt32();
             for (var i = 0; i < tileCount; i++) {

@@ -166,6 +166,12 @@ namespace SquareEmpires.Scenes.Game {
                 switchSceneFade<MenuScene>(0.1f);
             }
 
+            if (Input.isKeyPressed(Keys.E)) {
+                // end turn
+                // TODO: make this better
+                client.sendMessageAsync(new FinishTurnMessage());
+            }
+
             if (gameState.empireId > 0) {
                 // TODO: ??? hmmm
             }

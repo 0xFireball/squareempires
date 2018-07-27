@@ -41,7 +41,7 @@ namespace SquareEmpires.Components.Board {
         };
 
         public const int TILE_DRAW_SIZE = 32;
-        private const int TILE_TEXTURE_SIZE = 32;
+        public const int TILE_TEXTURE_SIZE = 32;
 
         // -- callbacks
         public Action<PawnRef, Position> pawnMove;
@@ -159,6 +159,12 @@ namespace SquareEmpires.Components.Board {
                 foreach (var pawn in gameState.pawns) {
                     var texture = pickTexture(pawn);
                     var pawnCol = pickEmpireColor(pawn.empire);
+                    // if move is available, fuzz outline
+                    if (pawn.lastMove < gameState.time) {
+                        graphics.batcher.draw(texture, vpos(pawn.pos) + new Vector2(TILE_DRAW_SIZE / 2f), pawnCol.multiply(new Color(200, 200, 200, 100)),
+                            rotation: 0f, origin: texture.origin,
+                            scale: new Vector2(1.4f), effects: SpriteEffects.None, layerDepth: 0.1f);
+                    }
                     graphics.batcher.draw(texture, vpos(pawn.pos), pawnCol);
                 }
             }
